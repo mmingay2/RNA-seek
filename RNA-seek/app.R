@@ -26,21 +26,24 @@ datab <- readRDS(file="./vitclists.RDS")
 
 ui <- navbarPage(title="Vitamin C induced epigenetic remodelling", theme = shinythemes::shinytheme("sandstone"),
                  tabPanel(title = "RNA-seek",
+                          h4(textOutput("apptitle1")),
+                          h4(textOutput("apptitle2")),
+                          h4(tags$a(href="https://www.nature.com/articles/leu2017171", "Click here to read my paper and learn more")),
+                          br(),
                           fluidPage(
-                            
-                            # Sidebar with controls to select the variable to plot against mpg
-                            # and to specify whether outliers should be included
                             sidebarPanel(
-                              selectInput("fillm", "Colour genes in msigDB list:", c(allg, names(datab)), multiple = F, selected = allg[3554])
+                              selectInput("fillm", "Select an msigDB term to highlight it's associated genes:", c(allg, names(datab)), multiple = F, selected = allg[3554])
                               
-                            ),
+                            )),fluidPage(
                             # Show the caption and plot of the requested variable against mpg
                             mainPanel(
-                              h3(textOutput("log(1+RPKM) for mm10v71 genes")),
                               plotOutput("rnaPlot", 
-                                         width = "100%",  height = "100%",
+                                         width = "125%",  height = "125%",
                                          hover = "plot_hover",
-                                         click = "plot_click"), 
+                                         click = "plot_click"),
+                              br(),
+                              h4(textOutput("tabletitle")),
+                              br(),
                               dataTableOutput("infob")
                             )))
 )
@@ -80,9 +83,18 @@ server <- shinyServer(function(input, output) {
     #coord_cartesian(xlim=c(-2,4), ylim=c(-2,4))
   }, width = 700, height = 400)
   
-  output$infob <- renderDataTable(
-    plata() %>% mutate(fc=log2(VitaminC/Untreated)) %>% nearPoints(input$plot_click, maxpoints = 25, threshold = 10))
+  output$infob <- renderDataTable({
+    plata() %>% nearPoints(input$plot_click, maxpoints = 25, threshold = 10) %>% mutate(fc=log2(((10^VitaminC)-1)/((10^Untreated)-1))) %>% dplyr::rename("log(1+RPKM) VitC treated" = "VitaminC", 
+                                                                      "log(1+RPKM) untreated" = "Untreated", 
+                                                                      "Gene Name" = "gene", 
+                                                                      "Ensembl ID" = "ensid", 
+                                                                      "RPKM log2 Fold Change (VitC/Unt)" = "fc",
+                                                                      "In MSigDB list?" = "InGroup")
+  })
   
+  output$tabletitle <- renderText("Cursor click the scatterplot above to display genes nearby the click position")
+  output$apptitle1 <- renderText("Use this application to explore pairwise gene expression differences between 2 RNA-seq libraries")
+  output$apptitle2 <- renderText("These libraries come from Untreated and Vitamin C treated (1mM) IDH1 R132H expression mouse bone marrow cells")
 })
 
 shinyApp(ui = ui, server = server)
