@@ -7,6 +7,7 @@ library(tidyr)
 library(reshape2)
 library(data.table)
 library(dplyr)
+library(DT)
 
 ##Set theme
 
@@ -31,10 +32,10 @@ ui <- navbarPage(title="Vitamin C induced epigenetic remodelling", theme = shiny
                           h4(tags$a(href="https://www.nature.com/articles/leu2017171", "Click here to read my paper and learn more")),
                           br(),
                           fluidPage(
+                            sidebarLayout(
                             sidebarPanel(
-                              selectInput("fillm", "Select an msigDB term to highlight it's associated genes:", c(allg, names(datab)), multiple = F, selected = allg[3554])
-                              
-                            )),fluidPage(
+                              selectInput("fillm", "Select an msigDB term to highlight it's associated genes:", c(allg, names(datab)), multiple = F, selected = allg[4748])
+                            ),
                             # Show the caption and plot of the requested variable against mpg
                             mainPanel(
                               plotOutput("rnaPlot", 
@@ -45,8 +46,12 @@ ui <- navbarPage(title="Vitamin C induced epigenetic remodelling", theme = shiny
                               h4(textOutput("tabletitle")),
                               br(),
                               dataTableOutput("infob")
-                            )))
+                          )
+                        )
+                      )
+               )
 )
+
 
 #Create a server object that generates output$ plots or tables that are reactitve '({})' to changes in the UI (input$*) to update the output (output$*)
 

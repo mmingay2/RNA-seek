@@ -1,10 +1,12 @@
 name: RNA-seek
-title:
+title: RNA-seek
+username:
 account: mmingay2
 server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
 appId: 175099
-bundleId: 802567
+bundleId: 2743121
 url: https://mmingay2.shinyapps.io/RNA-seek/
-when: 1493101387.17713
+when: 1579598273.40164
 asMultiple: FALSE
 asStatic: FALSE
